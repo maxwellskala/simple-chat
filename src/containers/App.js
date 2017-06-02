@@ -3,11 +3,20 @@ import PropTypes from 'prop-types';
 import * as Usernames from '../constants/Usernames';
 
 const CHANNEL = 'chat';
+const CONVERSATION_ID = '1';
 
 function getOtherUser(user) {
   return user === Usernames.NAS
     ? Usernames.JAYZ
     : Usernames.NAS;
+};
+
+function getMessage(text, username, conversationId) {
+  return {
+    text,
+    sender: username,
+    conversationId
+  };
 };
 
 class App extends React.Component {
@@ -16,12 +25,12 @@ class App extends React.Component {
 
     this.state = {
       user: null,
-      currentMessage: '',
+      currentText: '',
       messages: []
     };
 
     this.handleMessageReceive = this.handleMessageReceive.bind(this);
-    this.handleMessageChange = this.handleMessageChange.bind(this);
+    this.handleTextChange = this.handleTextChange.bind(this);
     this.handleMessageSend = this.handleMessageSend.bind(this);
     this.getHandleUserChoice = this.getHandleUserChoice.bind(this);
     this.renderMessages = this.renderMessages.bind(this);
@@ -38,29 +47,28 @@ class App extends React.Component {
   };
 
   handleMessageReceive(m) {
-    const text = m.message;
     this.setState(prevState => ({
-      messages: prevState.messages.concat([text])
+      messages: prevState.messages.concat([m])
     }));
   };
 
   handleMessageSend(e) {
     const { pubNub } = this.props;
-    const { currentMessage } = this.state;
+    const { currentText, user } = this.state;
     pubNub.publish(
       {
         channel: CHANNEL,
-        message: currentMessage
+        message: getMessage(currentText, user, CONVERSATION_ID)
       },
       (status, response) => console.log(status, response)
     );
-    this.setState({ currentMessage: '' });
+    this.setState({ currentText: '' });
   };
 
-  handleMessageChange(e) {
+  handleTextChange(e) {
     const message = e.target.value;
     this.setState(prevState => ({
-      currentMessage: message
+      currentText: message
     }));
   };
 
@@ -86,13 +94,13 @@ class App extends React.Component {
   };
 
   renderMessages() {
-    return this.state.messages.map(message => (
-      <div key={message}>{message}</div>
+    return this.state.messages.map(({ message }) => (
+      <div key={message.text}>{message.text}</div>
     ));
   };
 
   render() {
-    const { user, currentMessage } = this.state;
+    const { user, currentText } = this.state;
     if (!user) {
       return this.renderUserChoice();
     }
@@ -105,8 +113,8 @@ class App extends React.Component {
           Message:
           <input
             type="text"
-            value={currentMessage}
-            onChange={this.handleMessageChange}
+            value={currentText}
+            onChange={this.handleTextChange}
           />
           <button onClick={this.handleMessageSend}>Send</button>
         </label>
