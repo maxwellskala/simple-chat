@@ -19,7 +19,6 @@ class App extends React.Component {
   };
 
   handleMessageReceive(m) {
-    console.log('receiving PubNub message');
     const text = m.message;
     this.setState(prevState => ({
       messages: prevState.messages.concat([text])
