@@ -1,2 +1,2 @@
-export const HOVA = 'Shawn Carter';
-export const NASTRADAMUS = 'Nasir Jones';
+export const JAYZ = 'Shawn Carter';
+export const NAS = 'Nasir Jones';
