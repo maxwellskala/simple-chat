@@ -35,6 +35,7 @@ class App extends React.Component {
       },
       (status, response) => console.log(status, response)
     );
+    this.setState({ currentMessage: '' });
   };
 
   handleMessageChange(e) {
