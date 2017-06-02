@@ -87,7 +87,7 @@ class App extends React.Component {
 
   renderMessages() {
     return this.state.messages.map(message => (
-      <span key={message}>{message}</span>
+      <div key={message}>{message}</div>
     ));
   };
 
