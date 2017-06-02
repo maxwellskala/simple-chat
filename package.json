@@ -6,8 +6,8 @@
   "author": "Maxwell Skala",
   "license": "MIT",
   "scripts": {
-    "start": "webpack-dev-server",
-    "start-alt": "webpack-dev-server --port 9090"
+    "start": "webpack-dev-server -d",
+    "start-alt": "webpack-dev-server -d --port 9090"
   },
   "dependencies": {
     "babel-core": "^6.24.1",
