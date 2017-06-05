@@ -1,9 +1,18 @@
 import React from 'react';
 
-import { wrap } from './utils';
+import NewMessageInput from '../components/NewMessageInput';
+import { emptyFunc, wrap } from './utils';
+
+const currentText = 'Test';
+const DEFAULT_PROPS = {
+  onSend: emptyFunc,
+  onTextChange: emptyFunc,
+  currentText
+};
 
 describe('<NewMessageInput />', () => {
-  xit('renders props.currentText to input value', () => {
-    return;
+  it('renders props.currentText to input value', () => {
+    const wrapped = wrap(<NewMessageInput {...DEFAULT_PROPS} />);
+    expect(wrapped.find('input').prop('value')).toEqual(currentText);
   });
 });
