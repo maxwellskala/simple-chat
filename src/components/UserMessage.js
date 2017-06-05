@@ -5,7 +5,7 @@ import * as MessagePositions from '../constants/MessagePositions';
 
 function UserMessage({ text, side }) {
   const style = { textAlign: side };
-  return <div key={text + side} style={style}>{text}</div>;
+  return <div style={style}>{text}</div>;
 }
 
 UserMessage.propTypes = {

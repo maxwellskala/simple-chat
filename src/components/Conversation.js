@@ -11,7 +11,7 @@ function Conversation({ messages, user }) {
         const side = sender === user
           ? MessagePositions.RIGHT
           : MessagePositions.LEFT;
-        return <UserMessage text={text} side={side} />;
+        return <UserMessage key={text + side} text={text} side={side} />;
       })}
     </div>
   );

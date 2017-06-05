@@ -29,13 +29,15 @@ class App extends React.Component {
     this.state = {
       user: null,
       currentText: '',
-      messages: []
+      messages: [],
+      historyFetched: false
     };
 
     this.handleMessageReceive = this.handleMessageReceive.bind(this);
     this.handleTextChange = this.handleTextChange.bind(this);
     this.handleMessageSend = this.handleMessageSend.bind(this);
     this.getHandleUserChoice = this.getHandleUserChoice.bind(this);
+    this.renderLoadingHistory = this.renderLoadingHistory.bind(this);
     this.renderConversation = this.renderConversation.bind(this);
   }
 
@@ -49,6 +51,24 @@ class App extends React.Component {
     });
   }
 
+  componentDidMount() {
+    const { pubNub } = this.props;
+    pubNub.history(
+      {
+        channel: CHANNEL,
+        count: 25
+      },
+      (status, response) => {
+        const messages = response.messages
+          .filter(message => !!message.entry)
+          .map(({ entry }) => (
+            getMessage(entry.text, entry.sender, entry.conversationId)
+          ));
+        this.setState({ historyFetched: true, messages });
+      }
+    );
+  }
+
   handleMessageReceive(m) {
     this.setState(prevState => ({
       messages: prevState.messages.concat([m.message])
@@ -59,13 +79,10 @@ class App extends React.Component {
     const { pubNub } = this.props;
     const { currentText, user } = this.state;
     e.preventDefault();
-    pubNub.publish(
-      {
-        channel: CHANNEL,
-        message: getMessage(currentText, user, CONVERSATION_ID)
-      },
-      (status, response) => console.log(status, response)
-    );
+    pubNub.publish({
+      channel: CHANNEL,
+      message: getMessage(currentText, user, CONVERSATION_ID)
+    });
     this.setState({ currentText: '' });
   }
 
@@ -95,15 +112,23 @@ class App extends React.Component {
     );
   }
 
+  renderLoadingHistory() {
+    const { user } = this.state;
+    return <div>Welcome back {user}. Fetching your chat history...</div>;
+  }
+
   renderConversation() {
     const { currentText, ...props } = this.state;
     return <Conversation {...props} />;
   }
 
   render() {
-    const { user, currentText } = this.state;
+    const { user, currentText, historyFetched } = this.state;
     if (!user) {
       return this.renderUserChoice();
+    }
+    if (!historyFetched) {
+      return this.renderLoadingHistory();
     }
     const otherUser = getOtherUser(user);
     return (
