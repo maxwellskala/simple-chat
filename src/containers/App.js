@@ -2,12 +2,24 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import * as Usernames from '../constants/Usernames';
 
+import Conversation from '../components/Conversation';
+import NewMessageInput from '../components/NewMessageInput';
+
 const CHANNEL = 'chat';
+const CONVERSATION_ID = '1';
 
 function getOtherUser(user) {
   return user === Usernames.NAS
     ? Usernames.JAYZ
     : Usernames.NAS;
+};
+
+function getMessage(text, username, conversationId) {
+  return {
+    text,
+    sender: username,
+    conversationId
+  };
 };
 
 class App extends React.Component {
@@ -16,16 +28,16 @@ class App extends React.Component {
 
     this.state = {
       user: null,
-      currentMessage: '',
+      currentText: '',
       messages: []
     };
 
     this.handleMessageReceive = this.handleMessageReceive.bind(this);
-    this.handleMessageChange = this.handleMessageChange.bind(this);
+    this.handleTextChange = this.handleTextChange.bind(this);
     this.handleMessageSend = this.handleMessageSend.bind(this);
     this.getHandleUserChoice = this.getHandleUserChoice.bind(this);
-    this.renderMessages = this.renderMessages.bind(this);
-  };
+    this.renderConversation = this.renderConversation.bind(this);
+  }
 
   componentWillMount() {
     const { pubNub } = this.props;
@@ -35,41 +47,39 @@ class App extends React.Component {
     pubNub.subscribe({
       channels: [CHANNEL]
     });
-  };
+  }
 
   handleMessageReceive(m) {
-    const text = m.message;
     this.setState(prevState => ({
-      messages: prevState.messages.concat([text])
+      messages: prevState.messages.concat([m.message])
     }));
-  };
+  }
 
   handleMessageSend(e) {
     const { pubNub } = this.props;
-    const { currentMessage } = this.state;
+    const { currentText, user } = this.state;
+    e.preventDefault();
     pubNub.publish(
       {
         channel: CHANNEL,
-        message: currentMessage
+        message: getMessage(currentText, user, CONVERSATION_ID)
       },
       (status, response) => console.log(status, response)
     );
-    this.setState({ currentMessage: '' });
-  };
+    this.setState({ currentText: '' });
+  }
 
-  handleMessageChange(e) {
+  handleTextChange(e) {
     const message = e.target.value;
-    this.setState(prevState => ({
-      currentMessage: message
-    }));
-  };
+    this.setState({ currentText: message });
+  }
 
   getHandleUserChoice(username) {
-    return (e) => {
+    return () => {
       this.props.pubNub.setUUID(username);
       this.setState({ user: username });
     };
-  };
+  }
 
   renderUserChoice() {
     return (
@@ -83,16 +93,15 @@ class App extends React.Component {
         </button>
       </div>
     );
-  };
+  }
 
-  renderMessages() {
-    return this.state.messages.map(message => (
-      <div key={message}>{message}</div>
-    ));
-  };
+  renderConversation() {
+    const { currentText, ...props } = this.state;
+    return <Conversation {...props} />;
+  }
 
   render() {
-    const { user, currentMessage } = this.state;
+    const { user, currentText } = this.state;
     if (!user) {
       return this.renderUserChoice();
     }
@@ -100,20 +109,16 @@ class App extends React.Component {
     return (
       <div>
         <h3>You are logged in as {user} in a conversation with {otherUser}.</h3>
-        {this.renderMessages()}
-        <label>
-          Message:
-          <input
-            type="text"
-            value={currentMessage}
-            onChange={this.handleMessageChange}
-          />
-          <button onClick={this.handleMessageSend}>Send</button>
-        </label>
+        {this.renderConversation()}
+        <NewMessageInput
+          onSend={this.handleMessageSend}
+          onTextChange={this.handleTextChange}
+          currentText={currentText}
+        />
       </div>
     );
-  };
-};
+  }
+}
 
 App.propTypes = {
   pubNub: PropTypes.object.isRequired

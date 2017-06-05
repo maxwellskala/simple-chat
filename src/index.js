@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import 'react-hot-loader/patch';
+import { AppContainer } from 'react-hot-loader';
 import PubNub from 'pubnub';
 
 import App from './containers/App';
-import * as Usernames from './constants/Usernames';
 import { PUBNUB_PUBLISH, PUBNUB_SUBSCRIBE } from './ApiKeys';
 
 const pubNub = new PubNub({
@@ -12,7 +13,17 @@ const pubNub = new PubNub({
   ssl: true
 });
 
-ReactDOM.render(
-  <App pubNub={pubNub} />,
-  document.getElementById('root')
-);
+const render = Component => {
+  ReactDOM.render(
+    <AppContainer>
+      <Component pubNub={pubNub} />
+    </AppContainer>,
+    document.getElementById('root')
+  );
+};
+
+render(App);
+
+if (module.hot) {
+  module.hot.accept('./containers/App', () => { render(App); });
+}
