@@ -4,11 +4,12 @@ import PropTypes from 'prop-types';
 function Conversation({ messages, user }) {
   return (
     <div>
-      {messages.map(message => {
-        const floatSide = message.sender === user
+      {messages.map(({text, sender, conversationId})=> {
+        const side = sender === user
           ? 'right'
           : 'left';
-        return <div style={{ float: floatSide }}>message.text</div>;
+        const style = { position: 'fixed', [side]: 0 };
+        return <div key={sender + text} style={style}>{text}</div>;
       })}
     </div>
   );

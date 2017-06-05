@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import * as Usernames from '../constants/Usernames';
 
+import Conversation from '../components/Conversation';
+
 const CHANNEL = 'chat';
 const CONVERSATION_ID = '1';
 
@@ -33,7 +35,7 @@ class App extends React.Component {
     this.handleTextChange = this.handleTextChange.bind(this);
     this.handleMessageSend = this.handleMessageSend.bind(this);
     this.getHandleUserChoice = this.getHandleUserChoice.bind(this);
-    this.renderMessages = this.renderMessages.bind(this);
+    this.renderConversation = this.renderConversation.bind(this);
   };
 
   componentWillMount() {
@@ -48,7 +50,7 @@ class App extends React.Component {
 
   handleMessageReceive(m) {
     this.setState(prevState => ({
-      messages: prevState.messages.concat([m])
+      messages: prevState.messages.concat([m.message])
     }));
   };
 
@@ -93,10 +95,9 @@ class App extends React.Component {
     );
   };
 
-  renderMessages() {
-    return this.state.messages.map(({ message }) => (
-      <div key={message.text}>{message.text}</div>
-    ));
+  renderConversation() {
+    const { currentText, ...props } = this.state;
+    return <Conversation {...props} />;
   };
 
   render() {
@@ -108,7 +109,7 @@ class App extends React.Component {
     return (
       <div>
         <h3>You are logged in as {user} in a conversation with {otherUser}.</h3>
-        {this.renderMessages()}
+        {this.renderConversation()}
         <label>
           Message:
           <input
