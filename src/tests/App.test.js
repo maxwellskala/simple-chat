@@ -3,12 +3,8 @@ import React from 'react';
 import App from '../containers/App';
 import Conversation from '../components/Conversation';
 import NewMessageInput from '../components/NewMessageInput';
-import { wrap, wrapAndSetState } from './utils';
+import { emptyFunc, wrap, wrapAndSetState } from './utils';
 import * as Usernames from '../constants/Usernames';
-
-function emptyFunc() {
-  return null;
-}
 
 const pubNub = {
   addListener: emptyFunc,
