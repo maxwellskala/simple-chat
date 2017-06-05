@@ -38,7 +38,6 @@ class App extends React.Component {
     this.handleMessageSend = this.handleMessageSend.bind(this);
     this.getHandleUserChoice = this.getHandleUserChoice.bind(this);
     this.renderLoadingHistory = this.renderLoadingHistory.bind(this);
-    this.renderConversation = this.renderConversation.bind(this);
   }
 
   componentWillMount() {
