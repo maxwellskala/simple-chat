@@ -12,7 +12,7 @@ function getOtherUser(user) {
   return user === Usernames.NAS
     ? Usernames.JAYZ
     : Usernames.NAS;
-};
+}
 
 function getMessage(text, username, conversationId) {
   return {
@@ -20,7 +20,7 @@ function getMessage(text, username, conversationId) {
     sender: username,
     conversationId
   };
-};
+}
 
 class App extends React.Component {
   constructor(props) {
@@ -117,13 +117,13 @@ class App extends React.Component {
     return <div>Welcome back {user}. Fetching your chat history...</div>;
   }
 
-  renderConversation() {
-    const { currentText, ...props } = this.state;
-    return <Conversation {...props} />;
-  }
-
   render() {
-    const { user, currentText, historyFetched } = this.state;
+    const {
+      user,
+      currentText,
+      historyFetched,
+      messages
+    } = this.state;
     if (!user) {
       return this.renderUserChoice();
     }
@@ -134,7 +134,7 @@ class App extends React.Component {
     return (
       <div>
         <h3>You are logged in as {user} in a conversation with {otherUser}.</h3>
-        {this.renderConversation()}
+        <Conversation messages={messages} user={user} />
         <NewMessageInput
           onSend={this.handleMessageSend}
           onTextChange={this.handleTextChange}
