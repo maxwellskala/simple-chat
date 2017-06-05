@@ -1,15 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import UserMessage from './UserMessage';
+import * as MessagePositions from '../constants/MessagePositions';
+
 function Conversation({ messages, user }) {
   return (
     <div>
       {messages.map(({ text, sender }) => {
         const side = sender === user
-          ? 'right'
-          : 'left';
-        const style = { position: 'fixed', [side]: 0 };
-        return <div key={sender + text} style={style}>{text}</div>;
+          ? MessagePositions.RIGHT
+          : MessagePositions.LEFT;
+        return <UserMessage text={text} side={side} />;
       })}
     </div>
   );
@@ -18,6 +20,10 @@ function Conversation({ messages, user }) {
 Conversation.propTypes = {
   messages: PropTypes.arrayOf(PropTypes.object),
   user: PropTypes.string.isRequired
+};
+
+Conversation.defaultProps = {
+  messages: []
 };
 
 export default Conversation;
