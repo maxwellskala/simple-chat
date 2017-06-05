@@ -32,14 +32,14 @@ describe('<App />', () => {
   });
 
   xit('renders on NewMessageInput if state.user and state.historyFetched', () => {
-
+    return;
   });
 
   xit('properly updates state.currentMessage when NewMessageInput is altered', () => {
-
+    return;
   });
 
   xit('resets state.currentText to empty string when message is sent', () => {
-
+    return;
   });
 });
