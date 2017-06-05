@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 function Conversation({ messages, user }) {
   return (
     <div>
-      {messages.map(({text, sender, conversationId})=> {
+      {messages.map(({ text, sender }) => {
         const side = sender === user
           ? 'right'
           : 'left';
