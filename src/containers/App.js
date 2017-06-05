@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import * as Usernames from '../constants/Usernames';
 
 import Conversation from '../components/Conversation';
+import NewMessageInput from '../components/NewMessageInput';
 
 const CHANNEL = 'chat';
 const CONVERSATION_ID = '1';
@@ -36,7 +37,7 @@ class App extends React.Component {
     this.handleMessageSend = this.handleMessageSend.bind(this);
     this.getHandleUserChoice = this.getHandleUserChoice.bind(this);
     this.renderConversation = this.renderConversation.bind(this);
-  };
+  }
 
   componentWillMount() {
     const { pubNub } = this.props;
@@ -46,17 +47,18 @@ class App extends React.Component {
     pubNub.subscribe({
       channels: [CHANNEL]
     });
-  };
+  }
 
   handleMessageReceive(m) {
     this.setState(prevState => ({
       messages: prevState.messages.concat([m.message])
     }));
-  };
+  }
 
   handleMessageSend(e) {
     const { pubNub } = this.props;
     const { currentText, user } = this.state;
+    e.preventDefault();
     pubNub.publish(
       {
         channel: CHANNEL,
@@ -65,21 +67,19 @@ class App extends React.Component {
       (status, response) => console.log(status, response)
     );
     this.setState({ currentText: '' });
-  };
+  }
 
   handleTextChange(e) {
     const message = e.target.value;
-    this.setState(prevState => ({
-      currentText: message
-    }));
-  };
+    this.setState({ currentText: message });
+  }
 
   getHandleUserChoice(username) {
-    return (e) => {
+    return () => {
       this.props.pubNub.setUUID(username);
       this.setState({ user: username });
     };
-  };
+  }
 
   renderUserChoice() {
     return (
@@ -93,12 +93,12 @@ class App extends React.Component {
         </button>
       </div>
     );
-  };
+  }
 
   renderConversation() {
     const { currentText, ...props } = this.state;
     return <Conversation {...props} />;
-  };
+  }
 
   render() {
     const { user, currentText } = this.state;
@@ -110,19 +110,15 @@ class App extends React.Component {
       <div>
         <h3>You are logged in as {user} in a conversation with {otherUser}.</h3>
         {this.renderConversation()}
-        <label>
-          Message:
-          <input
-            type="text"
-            value={currentText}
-            onChange={this.handleTextChange}
-          />
-          <button onClick={this.handleMessageSend}>Send</button>
-        </label>
+        <NewMessageInput
+          onSend={this.handleMessageSend}
+          onTextChange={this.handleTextChange}
+          currentText={currentText}
+        />
       </div>
     );
-  };
-};
+  }
+}
 
 App.propTypes = {
   pubNub: PropTypes.object.isRequired

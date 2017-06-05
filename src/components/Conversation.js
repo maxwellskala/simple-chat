@@ -13,7 +13,7 @@ function Conversation({ messages, user }) {
       })}
     </div>
   );
-};
+}
 
 Conversation.propTypes = {
   messages: PropTypes.arrayOf(PropTypes.object),
