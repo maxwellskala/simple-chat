@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import PubNub from 'pubnub';
+// dev-specific hot loading stuff
 import 'react-hot-loader/patch';
 import { AppContainer } from 'react-hot-loader';
-import PubNub from 'pubnub';
 
 import App from './containers/App';
 import { PUBNUB_PUBLISH, PUBNUB_SUBSCRIBE } from './ApiKeys';
