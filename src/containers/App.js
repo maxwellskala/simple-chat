@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import * as Usernames from '../constants/Usernames';
+import { connect } from 'react-redux';
 
 import Conversation from '../components/Conversation';
 import NewMessageInput from '../components/NewMessageInput';
+import { updateUser } from '../actions';
+import * as Usernames from '../constants/Usernames';
 
 const CHANNEL = 'chat';
 const CONVERSATION_ID = '1';
@@ -27,7 +29,6 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      user: null,
       currentText: '',
       messages: [],
       historyFetched: false
@@ -75,8 +76,8 @@ class App extends React.Component {
   }
 
   handleMessageSend(e) {
-    const { pubNub } = this.props;
-    const { currentText, user } = this.state;
+    const { pubNub, user } = this.props;
+    const { currentText } = this.state;
     e.preventDefault();
     pubNub.publish({
       channel: CHANNEL,
@@ -91,9 +92,10 @@ class App extends React.Component {
   }
 
   getHandleUserChoice(username) {
+    const { pubNub, onUpdateUser } = this.props;
     return () => {
-      this.props.pubNub.setUUID(username);
-      this.setState({ user: username });
+      pubNub.setUUID(username);
+      onUpdateUser(username);
     };
   }
 
@@ -112,17 +114,17 @@ class App extends React.Component {
   }
 
   renderLoadingHistory() {
-    const { user } = this.state;
+    const { user } = this.props;
     return <div>Welcome back {user}. Fetching your chat history...</div>;
   }
 
   render() {
     const {
-      user,
       currentText,
       historyFetched,
       messages
     } = this.state;
+    const { user } = this.props;
     if (!user) {
       return this.renderUserChoice();
     }
@@ -145,7 +147,23 @@ class App extends React.Component {
 }
 
 App.propTypes = {
-  pubNub: PropTypes.object.isRequired
+  pubNub: PropTypes.object.isRequired,
+  onUpdateUser: PropTypes.func.isRequired,
+  user: PropTypes.string
 };
 
-export default App;
+App.defaultProps = {
+  user: null
+};
+
+const mapStateToProps = (state) => ({
+  user: state.user
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  onUpdateUser: user => dispatch(updateUser(user))
+});
+
+const connected = connect(mapStateToProps, mapDispatchToProps)(App);
+
+export default connected;
