@@ -4,7 +4,10 @@ import { connect } from 'react-redux';
 
 import Conversation from '../components/Conversation';
 import NewMessageInput from '../components/NewMessageInput';
-import { updateUser } from '../actions';
+import {
+  updateUser,
+  updateCurrentText
+} from '../actions';
 import * as Usernames from '../constants/Usernames';
 
 const CHANNEL = 'chat';
@@ -29,7 +32,6 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      currentText: '',
       messages: [],
       historyFetched: false
     };
@@ -76,19 +78,23 @@ class App extends React.Component {
   }
 
   handleMessageSend(e) {
-    const { pubNub, user } = this.props;
-    const { currentText } = this.state;
+    const {
+      pubNub,
+      user,
+      currentText,
+      onUpdateCurrentText
+    } = this.props;
     e.preventDefault();
     pubNub.publish({
       channel: CHANNEL,
       message: getMessage(currentText, user, CONVERSATION_ID)
     });
-    this.setState({ currentText: '' });
+    onUpdateCurrentText('');
   }
 
   handleTextChange(e) {
-    const message = e.target.value;
-    this.setState({ currentText: message });
+    const text = e.target.value;
+    this.props.onUpdateCurrentText(text);
   }
 
   getHandleUserChoice(username) {
@@ -119,12 +125,8 @@ class App extends React.Component {
   }
 
   render() {
-    const {
-      currentText,
-      historyFetched,
-      messages
-    } = this.state;
-    const { user } = this.props;
+    const { historyFetched, messages } = this.state;
+    const { currentText, user } = this.props;
     if (!user) {
       return this.renderUserChoice();
     }
@@ -149,19 +151,24 @@ class App extends React.Component {
 App.propTypes = {
   pubNub: PropTypes.object.isRequired,
   onUpdateUser: PropTypes.func.isRequired,
-  user: PropTypes.string
+  onUpdateCurrentText: PropTypes.func.isRequired,
+  user: PropTypes.string,
+  currentText: PropTypes.string
 };
 
 App.defaultProps = {
-  user: null
+  user: null,
+  currentText: ''
 };
 
-const mapStateToProps = (state) => ({
-  user: state.user
+const mapStateToProps = state => ({
+  user: state.user,
+  currentText: state.currentText
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  onUpdateUser: user => dispatch(updateUser(user))
+const mapDispatchToProps = dispatch => ({
+  onUpdateUser: user => dispatch(updateUser(user)),
+  onUpdateCurrentText: text => dispatch(updateCurrentText(text))
 });
 
 const connected = connect(mapStateToProps, mapDispatchToProps)(App);
