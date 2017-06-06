@@ -11,5 +11,8 @@ Upon loading the app, you will be prompted to pick a user from the two hardcoded
 
 To see the messaging in action, simply open two tabs to `localhost:8080` and choose a different user in each tab. Your messages will automatically propogate from tab to tab via the PubNub API.
 
+### API Key
+You will need your own PubNub API key. Get them for free on their site, and then export them from a file called `ApiKeys.js` in the `src` directory.
+
 ## Notes
 Per the prompt, I was not supposed to re-use code I had previously written. However, I had a few Enzyme-based testing utility functions for a different project [here](https://github.com/maxwellskala/cs-training-tracker/blob/master/client/src/tests/utils.js) which I actually did shamelessly copy/paste into this new project. It felt silly to re-write those from scratch when they're simply thin wrappers around the Enzyme ShallowWrapper that I like so I can keep test implementation specifics out of my actual test files as much as possible.
